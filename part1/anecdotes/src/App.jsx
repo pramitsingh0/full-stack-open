@@ -1,10 +1,28 @@
 import { useState } from "react";
-const Anecdote = ({ anecdote }) => {
-  return <p>{anecdote}</p>
-}
+const Anecdote = ({ anecdote, votes }) => {
+  return (
+    <div>
+      <h1>Anecdote of the day</h1>
+      <p>{anecdote}</p>
+      <p>Has {votes} votes</p>
+    </div>
+  );
+};
+const MostVotedAnecdote = ({ anecdote, vote }) => {
+  return (
+    <div>
+      <h1>Anecdote with most votes</h1>
+      <p>{anecdote}</p>
+      <p>has {vote} votes</p>
+    </div>
+  );
+};
 const ChangeButton = ({ onClickHandle }) => {
-  return <button onClick={onClickHandle}>Next Anecdote</button>
-}
+  return <button onClick={onClickHandle}>Next Anecdote</button>;
+};
+const VoteButton = ({ onClickHandle }) => {
+  return <button onClick={onClickHandle}>Vote</button>;
+};
 
 const App = () => {
   const anecdotes = [
@@ -19,15 +37,30 @@ const App = () => {
   ];
 
   const [selected, setSelected] = useState(0);
+  const [votes, setVotes] = useState(Array(anecdotes.length).fill(0));
+  const [maxAnecdotes, setMaxAnecdotes] = useState(0);
   const changeAnecdote = () => {
     let random = Math.floor(Math.random() * anecdotes.length);
     setSelected(random);
   };
+  const vote = (currentAnec) => () => {
+    const votesCopy = [...votes];
+    votesCopy[currentAnec] += 1;
+    setVotes(votesCopy);
+    mostVotedAnecdote();
+  };
+  const mostVotedAnecdote = () => {
+    const maxVote = votes.reduce((max, ele) => max < ele ? ele : max)
+    const maxAnecdotesIndex = votes.indexOf(maxVote)
+    setMaxAnecdotes(maxAnecdotesIndex);
+  };
 
   return (
     <div>
-      <Anecdote anecdote={anecdotes[selected]} />
+      <Anecdote anecdote={anecdotes[selected]} votes={votes[selected]} />
+      <VoteButton onClickHandle={vote(selected)} />
       <ChangeButton onClickHandle={changeAnecdote} />
+      <MostVotedAnecdote anecdote={anecdotes[maxAnecdotes]} vote={votes[maxAnecdotes]} />
     </div>
   );
 };
