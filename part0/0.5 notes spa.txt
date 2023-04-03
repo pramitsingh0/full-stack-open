@@ -1,0 +1,11 @@
+title notes spa
+
+note left of browser: request to server for notes spa
+browser -> server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/spa
+server --> browser : HTML-code
+browser -> server : HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.css
+server --> browser : CSS-file
+browser -> server : HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.js
+server --> browser : JS-file
+browser -> server : HTTP GET https://studies.cs.helsinki.fi/exampleapp/data.json
+server --> browser : [{"content":"","date":"2021-12-25T02:41:49.466Z"}, ...]
