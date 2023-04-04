@@ -33,10 +33,20 @@ const Display = ({ persons, filter }) => {
       <h2>Numbers</h2>
       {persons.map((person) => {
         if (person.name.toLowerCase().includes(filter.toLowerCase())) {
-        return <p key={person.name}>{person.name} {person.number}</p>
+          return (
+            <p key={person.name}>
+              {person.name} {person.number}
+            </p>
+          );
         }
-      })
-      }
+      })}
+    </div>
+  );
+};
+const FilterForm = ( { filter, changeHandle}) => {
+  return (
+    <div>
+      filter shown with: <input value={filter} onChange={changeHandle} />
     </div>
   );
 };
@@ -70,7 +80,7 @@ const App = () => {
 
   return (
     <div>
-      filter shown with: <input value={filter} onChange={filterChangeHandler} />
+      <FilterForm filter={filter} changeHandle={filterChangeHandler} />
       <Header />
       <ContactForm
         submitHandler={submitHandler}
@@ -79,7 +89,7 @@ const App = () => {
         name={newName}
         number={newNumber}
       />
-      <Display persons={persons} filter={filter}/>
+      <Display persons={persons} filter={filter} />
     </div>
   );
 };
