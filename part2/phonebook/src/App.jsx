@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import helpers from './services/dbConnect';
 const Header = () => <h2>Phonebook</h2>;
 const Input = ({ text, value, changeHandle }) => {
   return (
@@ -66,7 +67,7 @@ const App = () => {
     setFilter(e.target.value);
   };
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then(({data}) => setPersons(data));
+    helpers.getAllPersons().then((data) => setPersons(data));
   }, []);
 
   const submitHandler = (e) => {
@@ -76,9 +77,7 @@ const App = () => {
       return alert(`${newName} already added to the phonebook`);
     }
     const newPerson = { name: newName, number: newNumber };
-    axios
-      .post('http://localhost:3001/persons', newPerson)
-      .then(response => response.data)
+    helpers.createNewPerson(newPerson)
       .then(data => {
         setPersons([...persons, data]);
       });
