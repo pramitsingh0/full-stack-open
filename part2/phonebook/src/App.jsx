@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 const Header = () => <h2>Phonebook</h2>;
 const Input = ({ text, value, changeHandle }) => {
   return (
@@ -43,7 +44,7 @@ const Display = ({ persons, filter }) => {
     </div>
   );
 };
-const FilterForm = ( { filter, changeHandle}) => {
+const FilterForm = ({ filter, changeHandle }) => {
   return (
     <div>
       filter shown with: <input value={filter} onChange={changeHandle} />
@@ -51,9 +52,7 @@ const FilterForm = ( { filter, changeHandle}) => {
   );
 };
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "040-1234567" },
-  ]);
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
@@ -66,6 +65,9 @@ const App = () => {
   const filterChangeHandler = (e) => {
     setFilter(e.target.value);
   };
+  useEffect(() => {
+    axios.get("http://localhost:3001/persons").then(({data}) => setPersons(data));
+  }, []);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -73,7 +75,14 @@ const App = () => {
     if (dupFound) {
       return alert(`${newName} already added to the phonebook`);
     }
-    setPersons([...persons, { name: newName, number: newNumber }]);
+    const newPerson = { name: newName, number: newNumber };
+    axios
+      .post('http://localhost:3001/persons', newPerson)
+      .then(response => response.data)
+      .then(data => {
+        setPersons([...persons, data]);
+      });
+    // setPersons([...persons, { name: newName, number: newNumber }]);
     setNewName("");
     setNewNumber("");
   };
