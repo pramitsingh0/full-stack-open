@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import helpers from './services/dbConnect';
+import helpers from "./services/dbConnect";
 const Header = () => <h2>Phonebook</h2>;
 const Input = ({ text, value, changeHandle }) => {
   return (
@@ -13,6 +13,11 @@ const SubmitBtn = () => (
   <div>
     <button type="submit">Add</button>
   </div>
+);
+const DeleteBtn = ({ clickHandle }) => (
+  <button type="button" onClick={clickHandle}>
+    Delete
+  </button>
 );
 const ContactForm = ({
   submitHandler,
@@ -29,7 +34,7 @@ const ContactForm = ({
     </form>
   );
 };
-const Display = ({ persons, filter }) => {
+const Display = ({ persons, filter, deletePerson }) => {
   return (
     <div>
       <h2>Numbers</h2>
@@ -38,6 +43,7 @@ const Display = ({ persons, filter }) => {
           return (
             <p key={person.name}>
               {person.name} {person.number}
+              <DeleteBtn clickHandle={deletePerson(person.id)} />
             </p>
           );
         }
@@ -69,6 +75,13 @@ const App = () => {
   useEffect(() => {
     helpers.getAllPersons().then((data) => setPersons(data));
   }, []);
+  const deletePerson = (id) => () => {
+    const person = persons.find((person) => person.id == id);
+    if (person && window.confirm(`Delete ${person.name}`))
+      axios
+        .delete(`http://localhost:3001/persons/${id}`)
+        .then(setPersons(persons.filter((person) => person.id != id)));
+  };
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -77,10 +90,9 @@ const App = () => {
       return alert(`${newName} already added to the phonebook`);
     }
     const newPerson = { name: newName, number: newNumber };
-    helpers.createNewPerson(newPerson)
-      .then(data => {
-        setPersons([...persons, data]);
-      });
+    helpers.createNewPerson(newPerson).then((data) => {
+      setPersons([...persons, data]);
+    });
     // setPersons([...persons, { name: newName, number: newNumber }]);
     setNewName("");
     setNewNumber("");
@@ -97,7 +109,7 @@ const App = () => {
         name={newName}
         number={newNumber}
       />
-      <Display persons={persons} filter={filter} />
+      <Display persons={persons} filter={filter} deletePerson={deletePerson} />
     </div>
   );
 };
