@@ -72,9 +72,10 @@ const App = () => {
   const filterChangeHandler = (e) => {
     setFilter(e.target.value);
   };
-  useEffect(() => {
+  const getAll = () => {
     helpers.getAllPersons().then((data) => setPersons(data));
-  }, []);
+  }
+  useEffect(getAll, []);
   const deletePerson = (id) => () => {
     const person = persons.find((person) => person.id == id);
     if (person && window.confirm(`Delete ${person.name}`))
@@ -87,13 +88,15 @@ const App = () => {
     e.preventDefault();
     const dupFound = persons.find((person) => person.name === newName);
     if (dupFound) {
-      return alert(`${newName} already added to the phonebook`);
+      if(window.confirm(`${newName} already added to the phonebook`)) {
+        axios.put(`http://localhost:3001/persons/${dupFound.id}`, { ...dupFound, number: newNumber }).then(getAll)
+        return;
+      }
     }
     const newPerson = { name: newName, number: newNumber };
     helpers.createNewPerson(newPerson).then((data) => {
       setPersons([...persons, data]);
     });
-    // setPersons([...persons, { name: newName, number: newNumber }]);
     setNewName("");
     setNewNumber("");
   };
