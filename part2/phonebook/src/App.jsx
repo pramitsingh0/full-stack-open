@@ -19,6 +19,28 @@ const DeleteBtn = ({ clickHandle }) => (
     Delete
   </button>
 );
+const Notification = ({ message }) => {
+  if (message === "") return null;
+  console.log(message)
+  const isError = message.includes('Error')
+  const notifyStyles = {
+    color: isError ? "red" : "green",
+    border: "5px solid",
+    background: "lightgrey",
+    padding: 10,
+    marginBottom: 10,
+    fontSize: 20,
+    borderRadius: 5
+  };
+  const [showElement, setShowElement] = useState(true);
+  useEffect(() => {
+    setTimeout(function () {
+      setShowElement(false);
+      console.log('repeated')
+    }, 3000);
+  }, []);
+  return showElement ? <div style={notifyStyles}>{message}</div> : <></>;
+};
 const ContactForm = ({
   submitHandler,
   nameChangeHandle,
@@ -63,6 +85,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [message, setMessage] = useState("");
   const nameChangeHandler = (e) => {
     setNewName(e.target.value);
   };
@@ -74,22 +97,35 @@ const App = () => {
   };
   const getAll = () => {
     helpers.getAllPersons().then((data) => setPersons(data));
-  }
+  };
   useEffect(getAll, []);
   const deletePerson = (id) => () => {
     const person = persons.find((person) => person.id == id);
     if (person && window.confirm(`Delete ${person.name}`))
       axios
         .delete(`http://localhost:3001/persons/${id}`)
-        .then(setPersons(persons.filter((person) => person.id != id)));
+        .then(setPersons(persons.filter((person) => person.id != id)))
+        .then(setMessage(`Deleted ${person.name}`));
   };
 
   const submitHandler = (e) => {
     e.preventDefault();
     const dupFound = persons.find((person) => person.name === newName);
     if (dupFound) {
-      if(window.confirm(`${newName} already added to the phonebook`)) {
-        axios.put(`http://localhost:3001/persons/${dupFound.id}`, { ...dupFound, number: newNumber }).then(getAll)
+      console.log('dup found')
+      if (window.confirm(`${newName} already added to the phonebook`)) {
+        axios
+          .put(`http://localhost:3001/persons/${dupFound.id}`, {
+            ...dupFound,
+            number: newNumber,
+          })
+          .then(getAll)
+          .then(() => setMessage(`Updated ${newName}`))
+          .catch(() => {
+            setMessage(`Error! Information of ${newName} has already been removed from the server`)
+            setNewName("");
+            setNewNumber("");
+          });
         return;
       }
     }
@@ -99,12 +135,14 @@ const App = () => {
     });
     setNewName("");
     setNewNumber("");
+    setMessage(`Added ${newName}`);
   };
 
   return (
     <div>
       <FilterForm filter={filter} changeHandle={filterChangeHandler} />
       <Header />
+      <Notification message={message} />
       <ContactForm
         submitHandler={submitHandler}
         nameChangeHandle={nameChangeHandler}
