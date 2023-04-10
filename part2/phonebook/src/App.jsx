@@ -103,7 +103,7 @@ const App = () => {
     const person = persons.find((person) => person.id == id);
     if (person && window.confirm(`Delete ${person.name}`))
       axios
-        .delete(`http://localhost:3001/persons/${id}`)
+        .delete(`http://localhost:3001/api/persons/${id}`)
         .then(setPersons(persons.filter((person) => person.id != id)))
         .then(setMessage(`Deleted ${person.name}`));
   };
@@ -131,6 +131,7 @@ const App = () => {
     }
     const newPerson = { name: newName, number: newNumber };
     helpers.createNewPerson(newPerson).then((data) => {
+      console.log(data)
       setPersons([...persons, data]);
     });
     setNewName("");
