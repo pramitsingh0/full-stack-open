@@ -21,8 +21,8 @@ const DeleteBtn = ({ clickHandle }) => (
 );
 const Notification = ({ message }) => {
   if (message === "") return null;
-  console.log(message)
-  const isError = message.includes('Error')
+  console.log(message);
+  const isError = message.includes("Error");
   const notifyStyles = {
     color: isError ? "red" : "green",
     border: "5px solid",
@@ -30,13 +30,13 @@ const Notification = ({ message }) => {
     padding: 10,
     marginBottom: 10,
     fontSize: 20,
-    borderRadius: 5
+    borderRadius: 5,
   };
   const [showElement, setShowElement] = useState(true);
   useEffect(() => {
     setTimeout(function () {
       setShowElement(false);
-      console.log('repeated')
+      console.log("repeated");
     }, 3000);
   }, []);
   return showElement ? <div style={notifyStyles}>{message}</div> : <></>;
@@ -112,7 +112,7 @@ const App = () => {
     e.preventDefault();
     const dupFound = persons.find((person) => person.name === newName);
     if (dupFound) {
-      console.log('dup found')
+      console.log("dup found");
       if (window.confirm(`${newName} already added to the phonebook`)) {
         axios
           .put(`http://localhost:3001/persons/${dupFound.id}`, {
@@ -122,7 +122,9 @@ const App = () => {
           .then(getAll)
           .then(() => setMessage(`Updated ${newName}`))
           .catch(() => {
-            setMessage(`Error! Information of ${newName} has already been removed from the server`)
+            setMessage(
+              `Error! Information of ${newName} has already been removed from the server`
+            );
             setNewName("");
             setNewNumber("");
           });
@@ -130,10 +132,12 @@ const App = () => {
       }
     }
     const newPerson = { name: newName, number: newNumber };
-    helpers.createNewPerson(newPerson).then((data) => {
-      console.log(data)
-      setPersons([...persons, data]);
-    });
+    helpers
+      .createNewPerson(newPerson)
+      .then((data) => {
+        console.log(data);
+        setPersons([...persons, data]);
+      });
     setNewName("");
     setNewNumber("");
     setMessage(`Added ${newName}`);
@@ -155,4 +159,5 @@ const App = () => {
     </div>
   );
 };
+
 export default App;
