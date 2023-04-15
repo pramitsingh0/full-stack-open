@@ -139,10 +139,14 @@ const App = () => {
       .then((data) => {
         console.log(data);
         setPersons([...persons, data]);
+        setNewName("");
+        setNewNumber("");
+        setMessage(`Added ${newName}`);
+      })
+      .catch(e => {
+        console.log(e.response.data.error);
+        setMessage("Error " + e.response.data.error);
       });
-    setNewName("");
-    setNewNumber("");
-    setMessage(`Added ${newName}`);
   };
 
   return (

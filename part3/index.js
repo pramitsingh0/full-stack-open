@@ -27,16 +27,18 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname, "/dist/index.html");
 });
 
-app.get("/api/persons", async (req, res) => {
+app.get("/api/persons", async (req, res, next) => {
   try {
     const people = await Person.find({});
     res.status(201).json(people);
   } catch (e) {
+    next(e);
     console.log("Error: ", e);
   }
 });
 
-app.get("/info", (req, res) => {
+app.get("/info", async (req, res, next) => {
+  const persons = await Person.find({});
   res.send(
     `
     <div>
@@ -47,21 +49,18 @@ app.get("/info", (req, res) => {
   );
 });
 
-app.get("/api/persons/:id", (req, res) => {
+app.get("/api/persons/:id", async (req, res, next) => {
   const { id } = req.params;
-  const person = persons.find((person) => person.id === Number(id));
+  const person = await Person.findById(id);
   console.log(person);
   if (person) {
-    res.send(`<div>
-<p>name: ${person.name}</p>
-<p>number: ${person.number}</p>
-</div>`);
+    res.json(person);
   } else {
-    res.status(404).send("Not found");
+    res.status(404).send("Person Not found");
   }
 });
 
-app.post("/api/persons", async (req, res) => {
+app.post("/api/persons", async (req, res, next) => {
   const { name, number } = req.body;
 
   if (name && number) {
@@ -74,7 +73,7 @@ app.post("/api/persons", async (req, res) => {
       await newPerson.save();
     } catch (e) {
       console.log(e);
-      res.status(400).json({ error: `Error!! ${e}` });
+      return next(e);
     }
     res.status(201).send(newPerson);
   } else {
@@ -82,28 +81,33 @@ app.post("/api/persons", async (req, res) => {
   }
 });
 
-app.delete("/api/persons/:id", async (req, res) => {
+app.delete("/api/persons/:id", async (req, res, next) => {
   const { id } = req.params;
   try {
     await Person.findByIdAndDelete(id);
     res.status(204).end();
   } catch (e) {
-    console.log(e);
+    next(e);
     res.status(400).json({ error: e });
   }
 });
 
-app.put('/api/persons/:id', async (req, res) => {
+app.put("/api/persons/:id", async (req, res, next) => {
   const { id } = req.params;
   const { number } = req.body;
-  await Person.findByIdAndUpdate(id, { number });
+  await Person.findByIdAndUpdate(
+    id,
+    { number },
+    { new: true, runValidators: true }
+  );
   res.send(201).end();
 });
 
 const errorHandler = (err, req, res, next) => {
-  console.log(err.message);
-  if (error.name === "CastError") {
-    return res.status(400).send({ error: 'malformatted id' });
+  if (err.name === "CastError") {
+    return res.status(400).json({ error: "malformatted id" });
+  } else if (err.name === "ValidationError") {
+    res.status(401).json({ error: err.message });
   }
   next(err);
 };
