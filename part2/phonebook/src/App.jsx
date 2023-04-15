@@ -104,8 +104,9 @@ const App = () => {
     if (person && window.confirm(`Delete ${person.name}`))
       axios
         .delete(`http://localhost:3001/api/persons/${id}`)
-        .then(setPersons(persons.filter((person) => person.id != id)))
-        .then(setMessage(`Deleted ${person.name}`));
+        .then(getAll)
+        .then(() => setMessage(`Deleted ${person.name}`))
+        .catch((e) => console.log('Error', e));
   };
 
   const submitHandler = (e) => {
@@ -115,13 +116,14 @@ const App = () => {
       console.log("dup found");
       if (window.confirm(`${newName} already added to the phonebook`)) {
         axios
-          .put(`http://localhost:3001/persons/${dupFound.id}`, {
+          .put(`http://localhost:3001/api/persons/${dupFound.id}`, {
             ...dupFound,
             number: newNumber,
           })
           .then(getAll)
           .then(() => setMessage(`Updated ${newName}`))
-          .catch(() => {
+          .catch((e) => {
+            console.log(e)
             setMessage(
               `Error! Information of ${newName} has already been removed from the server`
             );

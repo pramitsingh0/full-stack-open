@@ -5,7 +5,6 @@ const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const path = require("path");
 const cors = require("cors");
-const mongoose = require("mongoose");
 require("dotenv").config();
 const dbConnect = require("./mongo");
 const Person = require("./models/Person");
@@ -61,14 +60,9 @@ app.get("/api/persons/:id", (req, res) => {
     res.status(404).send("Not found");
   }
 });
+
 app.post("/api/persons", async (req, res) => {
   const { name, number } = req.body;
-  const people = await Person.find({});
-  const peopleNames = people.map((person) => person.name);
-
-  if (peopleNames.includes(name)) {
-    res.status(502).json({ error: "name should be unique" });
-  }
 
   if (name && number) {
     const newPerson = new Person({
@@ -98,6 +92,23 @@ app.delete("/api/persons/:id", async (req, res) => {
     res.status(400).json({ error: e });
   }
 });
+
+app.put('/api/persons/:id', async (req, res) => {
+  const { id } = req.params;
+  const { number } = req.body;
+  await Person.findByIdAndUpdate(id, { number });
+  res.send(201).end();
+});
+
+const errorHandler = (err, req, res, next) => {
+  console.log(err.message);
+  if (error.name === "CastError") {
+    return res.status(400).send({ error: 'malformatted id' });
+  }
+  next(err);
+};
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
