@@ -14,17 +14,32 @@ beforeEach(async () => {
 
 describe("blog", () => {
   test("fetch all", async () => {
-    const { blogs } = await api
+    await api
       .get("/api/blogs")
       .expect(200)
       .expect("Content-Type", /application\/json/)
       .expect(function (res) {
-        console.log(res.body);
         expect(res.body.length).toBe(dummyBlogs.length);
+        res.body.forEach((data) => expect(data.id).toBeDefined());
       });
   }, 100000);
-});
-
-afterAll(() => {
-  mongoose.connection.close();
+  test("create new", async () => {
+    await api
+      .post("/api/blogs")
+      .send({
+        title: "This is title",
+        author: "Pramit",
+        url: "https://testblog.com",
+        likes: 10,
+      })
+      .set("Accept", "application/json")
+      .expect(201)
+      .expect("Content-Type", /application\/json/)
+      .expect(async function (res) {
+        console.log("Present here");
+        const blogs = await Blog.find({});
+        expect(blogs.length).toBe(dummyBlogs.length + 1);
+        expect(res.body.title).toBe("This is title");
+      });
+  });
 });
