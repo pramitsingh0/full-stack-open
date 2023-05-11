@@ -18,7 +18,7 @@ Router.post("/", async (request, response) => {
     response.status(201).json(result);
   } catch (e) {
     console.log(e);
-    response.send(e);
+    response.status(400).send(e);
   }
 });
 
