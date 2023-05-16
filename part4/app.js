@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const dbConnect = require("./mongo");
 const blogRoutes = require("./controllers/blogs");
+const userRoutes = require("./controllers/users");
 const { unknownEndpoint, errorHandler } = require("./utils/middleware");
 require("dotenv").config();
 
@@ -13,6 +14,7 @@ dbConnect()
   .then(() => console.log("Conencted to db"))
   .catch((e) => console.log(e));
 app.use("/api/blogs", blogRoutes);
+app.use("/api/users", userRoutes);
 app.use(unknownEndpoint);
 app.use(errorHandler);
 
