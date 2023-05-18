@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 // Fetch all Users API
 Router.get("/", async (req, res, next) => {
   try {
-    const allUsers = await User.find({});
+    const allUsers = await User.find({}).populate("blogs");
     res.status(200).json(allUsers);
   } catch (e) {
     next(e);
