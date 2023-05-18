@@ -2,6 +2,7 @@ const express = require("express");
 const Router = express.Router();
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 // Fetch all Users API
 Router.get("/", async (req, res, next) => {
@@ -30,6 +31,28 @@ Router.post("/", async (req, res, next) => {
   } catch (e) {
     next(e);
     res.status(400).send(e);
+  }
+});
+
+Router.post("/login", async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    const user = await User.findOne({ username: username });
+    const passwordResult = await bcrypt.compare(password, user.passwordHash);
+    if (!(user && passwordResult)) {
+      return res.status(401).json({
+        error: "invalid username or password",
+      });
+    }
+    // jwt payload
+    const userForToken = {
+      username: user.username,
+      id: user._id,
+    };
+    const token = jwt.sign(userForToken, process.env.JWT_SECRET);
+    res.status(200).send({ token, username: username, name: user.name });
+  } catch (e) {
+    next(e);
   }
 });
 
