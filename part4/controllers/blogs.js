@@ -16,15 +16,17 @@ Router.get("/", async (request, response, next) => {
 Router.post("/", async (request, response, next) => {
   try {
     // Everytime a blog is created assign a user to it assigned user should be random
-    const payload = jwt.verify(request.token, process.env.JWT_SECRET);
-    const blogCreator = await User.findOne({ _id: payload.id });
-    console.log(blogCreator);
+    const blogCreator = request.user;
+    if (!blogCreator) {
+      response.status(401).send("User unauthorised");
+    }
     const blog = new Blog(request.body);
     blog.creator = blogCreator;
     blogCreator.blogs.push(blog);
     blogCreator._id = blogCreator.id;
     delete blogCreator.id;
     const result = await blog.save();
+    console.log(result);
     await blogCreator.save();
     response.status(201).json(result);
   } catch (e) {
@@ -35,12 +37,21 @@ Router.post("/", async (request, response, next) => {
 Router.delete("/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
-    await Blog.findByIdAndDelete(id);
-    res.status(200).send("Blog deleted");
+    const blog = await Blog.findById(id);
+    console.log(req.user._id.toString(), blog.creator._id.toString());
+    const userId = req.user._id.toString();
+    const creatorId = blog.creator._id.toString();
+    if (userId === creatorId) {
+      await Blog.deleteOne({ _id: id });
+      res.status(200).send("Blog deleted");
+    } else {
+      res.status(401).send("Request unauthorised");
+    }
   } catch (e) {
     next(e);
   }
 });
+
 Router.put("/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -50,4 +61,5 @@ Router.put("/:id", async (req, res, next) => {
     next(e);
   }
 });
+
 module.exports = Router;

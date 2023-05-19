@@ -23,7 +23,7 @@ describe("blog", () => {
     allBlogs.forEach((data) => expect(data.id).toBeDefined);
   }, 100000);
 
-  test("create new", async () => {
+  test("create new blog if token is provided", async () => {
     await api
       .post("/api/blogs")
       .send({
@@ -32,11 +32,30 @@ describe("blog", () => {
         url: "https://testblog.com",
         likes: 10,
       })
-      .set("Accept", "application/json")
+      .set({
+        Accept: "application/json",
+        Authorization:
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwiaWQiOiI2NDY2MjNlOTc4YjRjNDc5NTNlOTFkZDAiLCJpYXQiOjE2ODQ0MTU2NTN9.lYIx0z19684oE0i1hoPaan6J0jlFa9nAhwr7aHMSkdE",
+      })
       .expect(201)
       .expect("Content-Type", /application\/json/);
     const createdBlog = await Blog.find({ title: "This is title" });
     expect(createdBlog).toBeDefined();
+  });
+
+  test("creating new blog fails if token is not provided with status code 401", async () => {
+    await api
+      .post("/api/blogs")
+      .send({
+        title: "This is title",
+        author: "Pramit",
+        url: "https://testblog.com",
+        likes: 10,
+      })
+      .set({
+        Accept: "application/json",
+      })
+      .expect(401);
   });
 
   test("verify like property if missing from the request, it will default to 0", async () => {
