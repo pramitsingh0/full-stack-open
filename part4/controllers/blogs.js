@@ -2,6 +2,7 @@ const express = require("express");
 const Router = express.Router();
 const Blog = require("../models/blog");
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
 
 Router.get("/", async (request, response, next) => {
   try {
@@ -11,19 +12,20 @@ Router.get("/", async (request, response, next) => {
     next(e);
   }
 });
-const randomNum = () => Math.floor(Math.random() * 10);
+
 Router.post("/", async (request, response, next) => {
   try {
     // Everytime a blog is created assign a user to it assigned user should be random
-    const allUsers = await User.find({});
-    const randUser = allUsers[randomNum()];
+    const payload = jwt.verify(request.token, process.env.JWT_SECRET);
+    const blogCreator = await User.findOne({ _id: payload.id });
+    console.log(blogCreator);
     const blog = new Blog(request.body);
-    blog.creator = randUser;
-    randUser.blogs.push(blog);
-    randUser._id = randUser.id;
-    delete randUser.id;
+    blog.creator = blogCreator;
+    blogCreator.blogs.push(blog);
+    blogCreator._id = blogCreator.id;
+    delete blogCreator.id;
     const result = await blog.save();
-    await randUser.save();
+    await blogCreator.save();
     response.status(201).json(result);
   } catch (e) {
     next(e);
