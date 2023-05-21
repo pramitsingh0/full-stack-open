@@ -3,6 +3,7 @@ const Router = express.Router();
 const Blog = require("../models/blog");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const middleware = require("../utils/middleware");
 
 Router.get("/", async (request, response, next) => {
   try {
@@ -13,7 +14,7 @@ Router.get("/", async (request, response, next) => {
   }
 });
 
-Router.post("/", async (request, response, next) => {
+Router.post("/", middleware.userExtractor, async (request, response, next) => {
   try {
     // Everytime a blog is created assign a user to it assigned user should be random
     const blogCreator = request.user;

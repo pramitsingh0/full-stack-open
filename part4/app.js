@@ -11,12 +11,14 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(middleware.tokenExtractor);
-app.use(middleware.userExtractor);
 dbConnect()
   .then(() => console.log("Conencted to db"))
   .catch((e) => console.log(e));
-app.use("/api/blogs", blogRoutes);
+app.get("/", (req, res) => {
+  res.send("Hopefully this works");
+});
 app.use("/api/users", userRoutes);
+app.use("/api/blogs", blogRoutes);
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
 

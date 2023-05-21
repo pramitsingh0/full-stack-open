@@ -9,8 +9,9 @@ const requestLogger = (req, res, next) => {
   next();
 };
 
-const unknownEndpoint = (req, res) => {
+const unknownEndpoint = (req, res, next) => {
   res.status(404).send({ error: "Unknown Endpoint" });
+  next();
 };
 
 const errorHandler = (err, req, res, next) => {
@@ -27,8 +28,8 @@ const tokenExtractor = (req, res, next) => {
   const { authorization } = req.headers;
   if (authorization && authorization.startsWith("Bearer")) {
     req.token = authorization.split(" ")[1];
-    next();
   }
+  next();
   return null;
 };
 

@@ -3,6 +3,7 @@ const Router = express.Router();
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const middleware = require("../utils/middleware");
 
 // Fetch all Users API
 Router.get("/", async (req, res, next) => {
@@ -15,7 +16,7 @@ Router.get("/", async (req, res, next) => {
   }
 });
 // Create User API
-Router.post("/", async (req, res, next) => {
+Router.post("/", middleware.userExtractor, async (req, res, next) => {
   try {
     // Hash password
     if (req.body.user.passwordHash < 3) {
