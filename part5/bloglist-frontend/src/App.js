@@ -39,24 +39,27 @@ const App = () => {
     setUser(null);
   };
 
-  const blogSubmit = async (e) => {
+  const blogSubmit = async (e, blogTitle, blogAuthor, blogUrl) => {
     e.preventDefault();
-    const createdBlog = await blogService.createNew(
-      {
-        title: blogTitle,
-        author: blogAuthor,
-        url: blogUrl,
-      },
-      user
-    );
-    setBlogs([...blogs, createdBlog]);
-    setBlogUrl("");
-    setBlogAuthor("");
-    setBlogTitle("");
-    setMessage(
-      `A new blog ${createdBlog.title} by ${createdBlog.author} added`
-    );
-    blogFormRef.current.toggleVisibility();
+    try {
+      const createdBlog = await blogService.createNew(
+        {
+          title: blogTitle,
+          author: blogAuthor,
+          url: blogUrl,
+        },
+        user
+      );
+      setBlogs([...blogs, createdBlog]);
+      setMessage(
+        `A new blog ${createdBlog.title} by ${createdBlog.author} added`
+      );
+      blogFormRef.current.toggleVisibility();
+    } catch (e) {
+      console.log(e);
+      setMessage("Error creating new blog");
+      throw new Error("Error creating new blog");
+    }
   };
 
   //Fetch all users on first render

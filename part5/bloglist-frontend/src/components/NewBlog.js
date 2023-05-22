@@ -1,17 +1,18 @@
 import { useState } from "react";
-const NewBlog = ({
-  submitHandler,
-  blogTitle,
-  setBlogTitle,
-  blogAuthor,
-  setBlogAuthor,
-  blogUrl,
-  setBlogUrl,
-}) => {
+const NewBlog = ({ submitHandler }) => {
+  const [blogTitle, setBlogTitle] = useState("");
+  const [blogAuthor, setBlogAuthor] = useState("");
+  const [blogUrl, setBlogUrl] = useState("");
+  const createNewBlog = async (e) => {
+    await submitHandler(e, blogTitle, blogAuthor, blogUrl);
+    setBlogTitle("");
+    setBlogAuthor("");
+    setBlogUrl("");
+  };
   return (
     <div>
       <h2>Create New Blog</h2>
-      <form onSubmit={submitHandler}>
+      <form onSubmit={createNewBlog}>
         <div>
           title:
           <input
