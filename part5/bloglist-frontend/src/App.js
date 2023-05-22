@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
 import blogService from "./services/blogs";
@@ -6,6 +6,7 @@ import login from "./services/login";
 import LogoutButton from "./components/LogoutButton";
 import NewBlog from "./components/NewBlog";
 import Notification from "./components/Notification";
+import Togglable from "./components/Togglable";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -16,6 +17,7 @@ const App = () => {
   const [blogAuthor, setBlogAuthor] = useState("");
   const [blogUrl, setBlogUrl] = useState("");
   const [message, setMessage] = useState("");
+  const blogFormRef = useRef();
 
   const loginHandler = async (e) => {
     e.preventDefault();
@@ -54,6 +56,7 @@ const App = () => {
     setMessage(
       `A new blog ${createdBlog.title} by ${createdBlog.author} added`
     );
+    blogFormRef.current.toggleVisibility();
   };
 
   //Fetch all users on first render
@@ -87,21 +90,22 @@ const App = () => {
       </>
     );
   }
-
   return (
     <div>
       <h2>blogs</h2>
       <p>{user.name} logged in</p> <LogoutButton clickHandler={logoutHandler} />
       <Notification message={message} />
-      <NewBlog
-        submitHandler={blogSubmit}
-        blogTitle={blogTitle}
-        setBlogTitle={setBlogTitle}
-        blogAuthor={blogAuthor}
-        setBlogAuthor={setBlogAuthor}
-        blogUrl={blogUrl}
-        setBlogUrl={setBlogUrl}
-      />
+      <Togglable buttonLabel="New Blog" ref={blogFormRef}>
+        <NewBlog
+          submitHandler={blogSubmit}
+          blogTitle={blogTitle}
+          setBlogTitle={setBlogTitle}
+          blogAuthor={blogAuthor}
+          setBlogAuthor={setBlogAuthor}
+          blogUrl={blogUrl}
+          setBlogUrl={setBlogUrl}
+        />
+      </Togglable>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
