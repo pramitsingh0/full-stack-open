@@ -106,7 +106,7 @@ const App = () => {
         .delete(`http://localhost:3001/api/persons/${id}`)
         .then(getAll)
         .then(() => setMessage(`Deleted ${person.name}`))
-        .catch((e) => console.log('Error', e));
+        .catch((e) => console.log("Error", e));
   };
 
   const submitHandler = (e) => {
@@ -123,7 +123,7 @@ const App = () => {
           .then(getAll)
           .then(() => setMessage(`Updated ${newName}`))
           .catch((e) => {
-            console.log(e)
+            console.log(e);
             setMessage(
               `Error! Information of ${newName} has already been removed from the server`
             );
@@ -143,7 +143,7 @@ const App = () => {
         setNewNumber("");
         setMessage(`Added ${newName}`);
       })
-      .catch(e => {
+      .catch((e) => {
         console.log(e.response.data.error);
         setMessage("Error " + e.response.data.error);
       });

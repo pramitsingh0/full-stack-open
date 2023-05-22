@@ -1,5 +1,5 @@
-const LoginButton = ({ clickHandler }) => {
+const LogoutButton = ({ clickHandler }) => {
   return <button onClick={clickHandler}>Logout</button>;
 };
 
-export default LoginButton;
+export default LogoutButton;
