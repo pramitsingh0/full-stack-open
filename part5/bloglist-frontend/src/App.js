@@ -7,6 +7,7 @@ import LogoutButton from "./components/LogoutButton";
 import NewBlog from "./components/NewBlog";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
+import DetailsButton from "./components/ViewDetailsButton";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
