@@ -56,8 +56,9 @@ Router.delete("/:id", async (req, res, next) => {
 Router.put("/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
-    const result = await Blog.findByIdAndUpdate(id, req.body, { new: true });
-    res.status(204).json(result);
+    const result = await Blog.findByIdAndUpdate(id.trim(), req.body, { new: true });
+    console.log(result)
+    res.json(result).status(204);
   } catch (e) {
     next(e);
   }

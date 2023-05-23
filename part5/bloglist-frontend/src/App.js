@@ -7,7 +7,6 @@ import LogoutButton from "./components/LogoutButton";
 import NewBlog from "./components/NewBlog";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
-import DetailsButton from "./components/ViewDetailsButton";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -62,10 +61,23 @@ const App = () => {
       throw new Error("Error creating new blog");
     }
   };
+  function sortByKey(array, key) {
+    return array.sort(function (a, b) {
+      let x = a[key];
+      let y = b[key];
+      if (x > y) {
+        return -1;
+      }
+      if (x < y) {
+        return 1;
+      }
+      return 0;
+    });
+  }
 
   //Fetch all users on first render
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    blogService.getAll().then((blogs) => setBlogs(sortByKey(blogs, "likes")));
   }, []);
 
   // Fetch logged in user from local storage

@@ -26,5 +26,17 @@ const createNew = async (blog, creator) => {
   }
 };
 
+const likeBlog = async (blog) => {
+  try {
+    console.log(`${baseUrl}/${blog.id}`);
+    const updatedBlog = await axios.put(`${baseUrl}/${blog.id}`, blog);
+    console.log(updatedBlog);
+    return updatedBlog.data;
+  } catch (e) {
+    console.log(e);
+    throw new Error("Error in updating blog");
+  }
+};
+
 // eslint-disable-next-line import/no-anonymous-default-export
-export default { getAll, createNew, setToken };
+export default { getAll, createNew, setToken, likeBlog };
