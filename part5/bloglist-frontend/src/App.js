@@ -19,7 +19,7 @@ const App = () => {
   const [message, setMessage] = useState("");
   const blogFormRef = useRef();
 
-  const loginHandler = async (e) => {
+  const loginHandler = async e => {
     e.preventDefault();
     try {
       const loggedUser = await login(username, password);
@@ -46,7 +46,7 @@ const App = () => {
         {
           title: blogTitle,
           author: blogAuthor,
-          url: blogUrl,
+          url: blogUrl
         },
         user
       );
@@ -61,8 +61,9 @@ const App = () => {
       throw new Error("Error creating new blog");
     }
   };
+  // Function to sort the blogs by number of likes
   function sortByKey(array, key) {
-    return array.sort(function (a, b) {
+    return array.sort(function(a, b) {
       let x = a[key];
       let y = b[key];
       if (x > y) {
@@ -74,10 +75,23 @@ const App = () => {
       return 0;
     });
   }
+  const blogDeleteHandler = async (blog, user) => {
+    try {
+      if (window.confirm(`Remove ${blog.title} by ${blog.author}?`)) {
+        const resp = await blogService.deleteBlog(blog.id, user);
+        if (resp === 200) {
+          setBlogs(blogs.filter(b => b.id != blog.id));
+        }
+      }
+    } catch (e) {
+      console.log(e);
+      throw new Error(e.response.data);
+    }
+  };
 
   //Fetch all users on first render
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(sortByKey(blogs, "likes")));
+    blogService.getAll().then(blogs => setBlogs(sortByKey(blogs, "likes")));
   }, []);
 
   // Fetch logged in user from local storage
@@ -122,8 +136,12 @@ const App = () => {
           setBlogUrl={setBlogUrl}
         />
       </Togglable>
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+      {blogs.map(blog => (
+        <Blog
+          key={blog.id}
+          blog={blog}
+          deleteHandler={() => blogDeleteHandler(blog, user)}
+        />
       ))}
     </div>
   );

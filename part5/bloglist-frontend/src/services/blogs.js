@@ -28,9 +28,7 @@ const createNew = async (blog, creator) => {
 
 const likeBlog = async (blog) => {
   try {
-    console.log(`${baseUrl}/${blog.id}`);
     const updatedBlog = await axios.put(`${baseUrl}/${blog.id}`, blog);
-    console.log(updatedBlog);
     return updatedBlog.data;
   } catch (e) {
     console.log(e);
@@ -38,5 +36,19 @@ const likeBlog = async (blog) => {
   }
 };
 
+const deleteBlog = async (blogId, user) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
+    };
+    const resp = await axios.delete(`${baseUrl}/${blogId}`, config);
+    return resp.status;
+  } catch (e) {
+    console.log(e);
+    throw new Error(e);
+  }
+};
 // eslint-disable-next-line import/no-anonymous-default-export
-export default { getAll, createNew, setToken, likeBlog };
+export default { getAll, createNew, setToken, likeBlog, deleteBlog };

@@ -2,7 +2,9 @@ import { useState } from "react";
 import DetailsButton from "./ViewDetailsButton";
 import LikeButton from "./LikeButton";
 import blogServices from "../services/blogs";
-const Blog = ({ blog }) => {
+import DeleteBlogButton from "./DeleteBlogButton";
+
+const Blog = ({ blog, deleteHandler, user }) => {
   const [detailsVisible, setDetailsVisibility] = useState(false);
   const [blogLikes, setBlogLikes] = useState(blog.likes);
   const toggleVisibility = () => setDetailsVisibility(!detailsVisible);
@@ -28,6 +30,8 @@ const Blog = ({ blog }) => {
           <LikeButton clickHandler={likeHandler} />
           <br />
           creator: {blog.creator.name}
+          <br />
+          <DeleteBlogButton clickHandler={deleteHandler} />
         </div>
       )}
     </div>
