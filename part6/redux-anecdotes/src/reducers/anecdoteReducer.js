@@ -18,6 +18,22 @@ const asObject = (anecdote) => {
 };
 
 const initialState = anecdotesAtStart.map(asObject);
+const createBlog = (content) => {
+  return {
+    type: "CREATE",
+    payload: {
+      content,
+    },
+  };
+};
+const voteBlog = (id) => {
+  return {
+    type: "VOTE",
+    payload: {
+      id,
+    },
+  };
+};
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
@@ -39,8 +55,7 @@ const reducer = (state = initialState, action) => {
     default:
       return state;
   }
-
-  return state;
 };
+export { createBlog, voteBlog };
 
 export default reducer;
