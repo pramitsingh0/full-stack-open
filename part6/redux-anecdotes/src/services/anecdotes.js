@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = "http://localhost:3001/anecdotes";
+const baseUrl = "http://localhost:3001/";
 
 const fetchAll = async () => {
   const response = await axios.get(baseUrl);
@@ -9,7 +9,7 @@ const fetchAll = async () => {
 
 const saveNote = async (anecdote) => {
   const object = { content: anecdote, votes: 0 };
-  const response = await axios.post(baseUrl, object);
+  const response = await axios.post(baseUrl + "/anecdotes", object);
   return response.data;
 };
 

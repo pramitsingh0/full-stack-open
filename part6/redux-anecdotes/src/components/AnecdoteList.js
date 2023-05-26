@@ -1,16 +1,15 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { voteBlog, setAnecdotes } from "../reducers/anecdoteReducer";
+import { voteBlog, initializeAnecdotes } from "../reducers/anecdoteReducer";
 import {
   newNotification,
   resetNotification,
 } from "../reducers/notificationReducer";
-import { fetchAll } from "../services/anecdotes";
 
 const AnecdoteList = () => {
   const dispatch = useDispatch();
   useEffect(() => {
-    fetchAll().then((anecdotes) => dispatch(setAnecdotes(anecdotes)));
+    dispatch(initializeAnecdotes());
   }, [dispatch]);
   function sortByKey(array, key) {
     return array.sort(function (a, b) {
