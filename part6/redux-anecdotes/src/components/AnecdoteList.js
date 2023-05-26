@@ -1,7 +1,17 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { voteBlog } from "../reducers/anecdoteReducer";
+import { voteBlog, setAnecdotes } from "../reducers/anecdoteReducer";
+import {
+  newNotification,
+  resetNotification,
+} from "../reducers/notificationReducer";
+import { fetchAll } from "../services/anecdotes";
 
 const AnecdoteList = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    fetchAll().then((anecdotes) => dispatch(setAnecdotes(anecdotes)));
+  }, [dispatch]);
   function sortByKey(array, key) {
     return array.sort(function (a, b) {
       let x = a[key];
@@ -17,10 +27,16 @@ const AnecdoteList = () => {
     );
     return sortByKey(filteredAnecdotes, "votes");
   });
-  const dispatch = useDispatch();
 
   const vote = (id) => {
     dispatch(voteBlog(id));
+    const anecdoteContent = anecdotes.find(
+      (anecdote) => anecdote.id === id
+    ).content;
+    dispatch(newNotification(`You voted ${anecdoteContent}`));
+    setTimeout(() => {
+      dispatch(resetNotification());
+    }, 5000);
   };
   return (
     <div>
