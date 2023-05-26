@@ -30,7 +30,7 @@ const anecdoteSlice = createSlice({
       const newAnecdote = action.payload;
       state.push(newAnecdote);
     },
-    voteBlog(state, action) {
+    vote(state, action) {
       const id = action.payload;
       const anecdoteToVote = state.find((anecdote) => anecdote.id === id);
       const changedAnecdote = {
@@ -53,6 +53,20 @@ export const initializeAnecdotes = () => {
     dispatch(setAnecdotes(response.data));
   };
 };
-export const { createBlog, voteBlog, setAnecdotes } = anecdoteSlice.actions;
+export const createNewAnecdote = (anecdote) => {
+  return async (dispatch) => {
+    const object = { content: anecdote, votes: 0 };
+    const response = await axios.post(baseUrl, object);
+    dispatch(createBlog(response.data));
+  };
+};
+export const voteAnecdote = (anecdote) => {
+  return async (dispatch) => {
+    const object = { ...anecdote, votes: anecdote.votes + 1 };
+    const response = await axios.put(`${baseUrl}/${anecdote.id}`, object);
+    dispatch(vote(response.data.id));
+  };
+};
+export const { createBlog, vote, setAnecdotes } = anecdoteSlice.actions;
 
 export default anecdoteSlice.reducer;
